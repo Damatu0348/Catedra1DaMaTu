@@ -15,7 +15,7 @@ namespace api.src.Models
         public string Name { get; set; } = string.Empty;
         [EmailAddress(ErrorMessage = "Correo electrónico inválido.")]
         public string Email { get; set; } = string.Empty;
-        [RegularExpression(@"Masculino|Femenino|Otro|Prefiero no decirlo")]
+        [RegularExpression(@"Masculino|Femenino|Otro|Prefiero no decirlo", ErrorMessage = "El género no es válido.")]
         public string Gender { get; set; } = string.Empty;
         public string BirthDate { get; set; } = string.Empty;
 
