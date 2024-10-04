@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.src.Data;
+using api.src.Mappers;
 using api.src.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,8 @@ namespace api.Controllers
         public IActionResult Get()
         {
             //Retorna un listado de todos los usuarios en la base de datos
-            var users = _context.Users.ToList();
+            var users = _context.Users.ToList()
+            .Select(u => u.ToUserDto());
             return Ok(users);
         }
 
@@ -77,7 +79,7 @@ namespace api.Controllers
             _context.SaveChanges();
             return Ok(userToUpdate);
         }
-        
+
         [HttpDelete("{id}")]
         public IActionResult DeleteId([FromRoute] int id)
         {
@@ -88,7 +90,7 @@ namespace api.Controllers
             }
             _context.Users.Remove(user);
             _context.SaveChanges();
-            return Ok();
+            return Ok("Usuario eliminado exitosamente");
         }
     }
 }
