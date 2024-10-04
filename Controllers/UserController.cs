@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.src.Data;
+using api.src.Interfaces;
 using api.src.Mappers;
 using api.src.Models;
+using api.src.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -13,25 +15,32 @@ namespace api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
-        public UserController(ApplicationDBContext context)
+        private readonly IUserRepository _userRepository;
+        public UserController(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
+        //Retorna un listado de todos los usuarios en la base de datos
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAll([FromQuery] string sort, [FromQuery] string gender)
         {
-            //Retorna un listado de todos los usuarios en la base de datos
-            var users = _context.Users.ToList()
-            .Select(u => u.ToUserDto());
+            if (!string.IsNullOrEmpty(sort) && sort != "asc" && sort != "desc")
+            return BadRequest("Orden de nombre inválido");
+
+            if (!string.IsNullOrEmpty(gender) && gender != "Masculino" && gender != "Femenino" && gender != "Otro" && gender != "Prefiero no decirlo")
+                return BadRequest("Género inválido");
+
+            var users = await _userRepository.GetAllUsersAsync(sort, gender);
             return Ok(users);
         }
 
+
+        /*
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _userRepository.FirstOrDefault(u => u.Id == id);
             // Si no hay usuarios en la base de datos
             if(user == null)
             {
@@ -92,5 +101,7 @@ namespace api.Controllers
             _context.SaveChanges();
             return Ok("Usuario eliminado exitosamente");
         }
+        */
+        
     }
 }
