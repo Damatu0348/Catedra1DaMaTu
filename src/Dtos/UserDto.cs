@@ -8,7 +8,7 @@ namespace api.src.Dtos
 {
     public class UserDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         [StringLength(12, MinimumLength = 9, ErrorMessage = "El RUT debe tener entre 9 y 12 caracteres.")]
         public string Rut { get; set; } = string.Empty;
         [StringLength(100, MinimumLength = 3)]

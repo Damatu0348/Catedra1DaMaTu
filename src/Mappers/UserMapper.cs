@@ -15,7 +15,7 @@ namespace api.src.Mappers
             //Retorna SOLO lo que esta dentro del metodo
             return new UserDto
             {
-                //Id = userModel.Id,
+                Id = userModel.Id,
                 Rut = userModel.Rut,
                 Name = userModel.Name,
                 Email = userModel.Email,

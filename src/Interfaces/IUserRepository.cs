@@ -8,6 +8,10 @@ namespace api.src.Interfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllUsersAsync(string sort, string gender);
+        Task<List<User>> GetAllUsers();
+
+        Task<List<User>> GetAllUsersAsync(string sort, string gender);
+        Task<User> GetUserByRutAsync(string rut);
+        Task<User> PostUser(User user);
     }
 }

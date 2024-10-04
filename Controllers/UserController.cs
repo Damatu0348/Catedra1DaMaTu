@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.src.Data;
+using api.src.Dtos;
 using api.src.Interfaces;
 using api.src.Mappers;
 using api.src.Models;
@@ -26,13 +27,45 @@ namespace api.Controllers
         public async Task<IActionResult> GetAll([FromQuery] string sort, [FromQuery] string gender)
         {
             if (!string.IsNullOrEmpty(sort) && sort != "asc" && sort != "desc")
-            return BadRequest("Orden de nombre inválido");
+            {
+                return BadRequest("Orden de nombre inválido");
+            }
 
             if (!string.IsNullOrEmpty(gender) && gender != "Masculino" && gender != "Femenino" && gender != "Otro" && gender != "Prefiero no decirlo")
+            {
                 return BadRequest("Género inválido");
+            }
+                
 
             var users = await _userRepository.GetAllUsersAsync(sort, gender);
             return Ok(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] PostUserRequestDto userDto)
+        {
+            //Si el rut NO es valido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existingUser = await _userRepository.GetUserByRutAsync(userDto.Rut);
+            //Si el Rut YA existe
+            if (existingUser != null)
+            {
+                return Conflict("El RUT ya existe.");
+            }
+
+            //Si el genero NO es uno de los disponibles
+            if (userDto.Gender != "Masculino" && userDto.Gender != "Femenino" && userDto.Gender != "Otro" && userDto.Gender != "Prefiero no decirlo")
+            {
+                return BadRequest("El género proporcionado no es válido.");
+            }
+
+            var userModel = userDto.ToUserFromPostDto();
+            await _userRepository.PostUser(userModel);
+            return CreatedAtAction(nameof(GetAll), new { id = userModel.Id }, userDto);
         }
 
 
