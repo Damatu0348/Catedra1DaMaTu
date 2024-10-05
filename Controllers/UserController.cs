@@ -64,7 +64,7 @@ namespace api.Controllers
             }
 
             var userModel = userDto.ToUserFromPostDto();
-            await _userRepository.PostUser(userModel);
+            await _userRepository.PostUserAsync(userModel);
             return CreatedAtAction(nameof(GetAll), new { id = userModel.Id }, userDto);
         }
 
@@ -94,57 +94,20 @@ namespace api.Controllers
             userExist.Gender = putUser.Gender;
             userExist.BirthDate = putUser.BirthDate;
 
-            await _userRepository.PutUser(userExist);
-            return Ok(userExist);
-        }
-
-
-
-        /*
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _userRepository.FirstOrDefault(u => u.Id == id);
-            // Si no hay usuarios en la base de datos
-            if(user == null)
-            {
-                return NotFound("Usuario NO eistente en el sistema :(");
-            }
-            return Ok(user);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult PutId([FromRoute] int id, [FromBody] User user)
-        {
-            var userToUpdate = _context.Users.FirstOrDefault(u => u.Id == id);
-            //Si no existe un usuario para actualizar
-            if(userToUpdate == null)
-            {
-                return NotFound();
-            }
-            userToUpdate.Rut = user.Rut;
-            userToUpdate.Name = user.Name;
-            userToUpdate.Email = user.Email;
-            userToUpdate.Gender = user.Gender;
-            userToUpdate.BirthDate = user.BirthDate;
-
-            _context.SaveChanges();
-            return Ok(userToUpdate);
+            await _userRepository.PutUserAsync(userExist);
+            return Ok("Usuario editado exitosamente");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteId([FromRoute] int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = await _userRepository.GetUserByIdAsync(id);
             if(user == null)
             {
-                return NotFound();
+                return NotFound("Usuario NO encontrado");
             }
-            _context.Users.Remove(user);
-            _context.SaveChanges();
+            await _userRepository.DeleteUserAsync(id);
             return Ok("Usuario eliminado exitosamente");
-        }
-        */
-        
+        }        
     }
 }

@@ -14,7 +14,9 @@ namespace api.src.Interfaces
         Task<List<User>> GetAllUsersAsync(string sort, string gender);
         Task<User?> GetUserByRutAsync(string rut);
         Task<User?> GetUserByIdAsync(int id);
-        Task<User> PostUser(User user);
-        Task PutUser(User user);
+        Task<User> PostUserAsync(User user);
+        Task PutUserAsync(User user);
+        Task DeleteUserAsync(int id);
+
     }
 }

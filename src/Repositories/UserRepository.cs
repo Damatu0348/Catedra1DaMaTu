@@ -48,17 +48,27 @@ namespace api.src.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
         }
 
-        public async Task<User> PostUser(User user)
+        public async Task<User> PostUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task PutUser(User user)
+        public async Task PutUserAsync(User user)
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteUserAsync(int id)
+        {
+            var userDelete = await _context.Users.FindAsync(id);
+            if(userDelete != null)
+            {
+                _context.Users.Remove(userDelete);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
