@@ -68,6 +68,37 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetAll), new { id = userModel.Id }, userDto);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutId([FromRoute] int id, [FromBody] PutUserRequestDto putUser)
+        {
+            var userExist = await _userRepository.GetUserByIdAsync(id);
+            //Si no existe un usuario para actualizar
+            if(userExist == null)
+            {
+                return NotFound("Usuario NO encontrado.");
+            }
+            var userSameRut = await _userRepository.GetUserByRutAsync(putUser.Rut);
+            if(userSameRut != null && userSameRut.Id != id)
+            {
+                return Conflict("El Rut YA esta registrado por otro usuario");
+            }
+
+            if (putUser.Gender != "Masculino" && putUser.Gender != "Femenino" && putUser.Gender != "Otro" && putUser.Gender != "Prefiero no decirlo")
+            {
+                return BadRequest("El género escrito NO es válido.");
+            }
+            
+            userExist.Rut = putUser.Rut;
+            userExist.Name = putUser.Name;
+            userExist.Email = putUser.Email;
+            userExist.Gender = putUser.Gender;
+            userExist.BirthDate = putUser.BirthDate;
+
+            await _userRepository.PutUser(userExist);
+            return Ok(userExist);
+        }
+
+
 
         /*
         [HttpGet("{id}")]
@@ -80,27 +111,6 @@ namespace api.Controllers
                 return NotFound("Usuario NO eistente en el sistema :(");
             }
             return Ok(user);
-        }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] User user)
-        {
-            // Validaciones de modelo
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Comprobar si el RUT ya existe
-            if (_context.Users.Any(u => u.Rut == user.Rut))
-            {
-                return Conflict("El RUT ya existe.");
-            }
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(Post), new { id = user.Rut }, user);
         }
 
         [HttpPut("{id}")]

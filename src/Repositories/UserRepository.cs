@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.src.Data;
+using api.src.Dtos;
 using api.src.Interfaces;
 using api.src.Models;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,12 @@ namespace api.src.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<User> GetUserByRutAsync(string rut)
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<User?> GetUserByRutAsync(string rut)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
         }
@@ -47,6 +53,12 @@ namespace api.src.Repositories
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public async Task PutUser(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }
